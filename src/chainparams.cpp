@@ -156,8 +156,8 @@ public:
         assert(hashGenesisBlock == uint256("0x12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2"));
         assert(genesis.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
 
-        vSeeds.push_back(CDNSSeedData("litecointools.com", "dnsseed.litecointools.com"));
-        vSeeds.push_back(CDNSSeedData("litecoinpool.org", "dnsseed.litecoinpool.org"));
+        vSeeds.push_back(CDNSSeedData("florincointools.com", "dnsseed.florincointools.com"));
+        vSeeds.push_back(CDNSSeedData("florincoinpool.org", "dnsseed.florincoinpool.org"));
         vSeeds.push_back(CDNSSeedData("xurious.com", "dnsseed.ltc.xurious.com"));
         vSeeds.push_back(CDNSSeedData("koin-project.com", "dnsseed.koin-project.com"));
         vSeeds.push_back(CDNSSeedData("weminemnc.com", "dnsseed.weminemnc.com"));
@@ -179,7 +179,7 @@ public:
         fSkipProofOfWorkCheck = false;
         fTestnetToBeDeprecatedFieldRPC = false;
 
-        // Litecoin: Mainnet v2 enforced as of block 710k
+        // Florincoin: Mainnet v2 enforced as of block 710k
         nEnforceV2AfterHeight = 710000;
     }
 
@@ -220,7 +220,7 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("litecointools.com", "testnet-seed.litecointools.com"));
+        vSeeds.push_back(CDNSSeedData("florincointools.com", "testnet-seed.florincointools.com"));
         vSeeds.push_back(CDNSSeedData("xurious.com", "testnet-seed.ltc.xurious.com"));
         vSeeds.push_back(CDNSSeedData("wemine-testnet.com", "dnsseed.wemine-testnet.com"));
 
@@ -240,7 +240,7 @@ public:
         fMineBlocksOnDemand = false;
         fTestnetToBeDeprecatedFieldRPC = true;
 
-        // Litecoin: Testnet v2 enforced as of block 400k
+        // Florincoin: Testnet v2 enforced as of block 400k
         nEnforceV2AfterHeight = 400000;
     }
     const Checkpoints::CCheckpointData& Checkpoints() const 
@@ -289,7 +289,7 @@ public:
         fMineBlocksOnDemand = true;
         fTestnetToBeDeprecatedFieldRPC = false;
 
-        // Litecoin: v2 enforced using Bitcoin's supermajority rule
+        // Florincoin: v2 enforced using Bitcoin's supermajority rule
         nEnforceV2AfterHeight = -1;
     }
     const Checkpoints::CCheckpointData& Checkpoints() const 
@@ -317,7 +317,7 @@ public:
         fAllowMinDifficultyBlocks = false;
         fMineBlocksOnDemand = true;
 
-        // Litecoin: v2 enforced using Bitcoin's supermajority rule
+        // Florincoin: v2 enforced using Bitcoin's supermajority rule
         nEnforceV2AfterHeight = -1;
     }
 
