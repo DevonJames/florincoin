@@ -13,11 +13,54 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
+    static const int nMinActualTimespan_Version1 = Params().nAveragingTargetTimespan_Version1 * (100 - Params().nMaxAdjustUp_Version1) / 100;
+    static const int nMaxActualTimespan_Version1 = Params().nAveragingTargetTimespan_Version1 * (100 + Params().nMaxAdjustDown_Version1) / 100;
+    static const int nMinActualTimespan_Version2 = Params().nAveragingTargetTimespan_Version2 * (100 - Params().nMaxAdjustUp_Version2) / 100;
+    static const int nMaxActualTimespan_Version2 = Params().nAveragingTargetTimespan_Version2 * (100 + Params().nMaxAdjustDown_Version2) / 100;
+    static const int nMinActualTimespan_Version3 = Params().nAveragingTargetTimespan_Version3 * (100 - Params().nMaxAdjustUp_Version3) / 100;
+    static const int nMaxActualTimespan_Version3 = Params().nAveragingTargetTimespan_Version3 * (100 + Params().nMaxAdjustDown_Version3) / 100;
+
     unsigned int nProofOfWorkLimit = Params().ProofOfWorkLimit().GetCompact();
 
     // Genesis block
     if (pindexLast == NULL)
         return nProofOfWorkLimit;
+
+    unsigned int nInterval;
+    unsigned int nTargetTimespan;
+    unsigned int nAveragingInterval;
+    unsigned int nMinActualTimespan;
+    unsigned int nMaxActualTimespan;
+    unsigned int nAveragingTargetTimespan;
+
+    if (pindexLast->nHeight+1 < Params().nHeight_Version2)
+    {
+        nAveragingInterval = Params().nAveragingInterval_Version1;
+        nInterval = Params().nInterval_Version1;
+        nTargetTimespan = Params().nTargetTimespan_Version1;
+        nMinActualTimespan = nMinActualTimespan_Version1;
+        nMaxActualTimespan = nMaxActualTimespan_Version1;
+        nAveragingTargetTimespan = Params().nAveragingTargetTimespan_Version1;
+    }
+    else
+    if (pindexLast->nHeight+1 < Params().nHeight_Version3)
+    {
+        nAveragingInterval = Params().nAveragingInterval_Version2;
+        nInterval = Params().nInterval_Version2;
+        nTargetTimespan = Params().nTargetTimespan_Version2;
+        nMinActualTimespan = nMinActualTimespan_Version2;
+        nMaxActualTimespan = nMaxActualTimespan_Version2;
+        nAveragingTargetTimespan = Params().nAveragingTargetTimespan_Version2;
+    }
+    else
+    {
+        nAveragingInterval = Params().nAveragingInterval_Version3;
+        nInterval = Params().nInterval_Version3;
+        nTargetTimespan = Params().nTargetTimespan_Version3;
+        nMinActualTimespan = nMinActualTimespan_Version3;
+        nMaxActualTimespan = nMaxActualTimespan_Version3;
+        nAveragingTargetTimespan = Params().nAveragingTargetTimespan_Version3;
+    }
 
     // Only change once per interval
     if ((pindexLast->nHeight+1) % Params().Interval() != 0)
@@ -43,11 +86,11 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
     // Florincoin: This fixes an issue where a 51% attack can change difficulty at will.
     // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
-    int blockstogoback = Params().Interval()-1;
-    if ((pindexLast->nHeight+1) != Params().Interval())
-        blockstogoback = Params().Interval();
+    int blockstogoback = nAveragingInterval-1;
+    if ((pindexLast->nHeight+1) != nAveragingInterval)
+        blockstogoback = nAveragingInterval;
 
-    // Go back by what we want to be 14 days worth of blocks
+    // Go back by what we want to be nAveragingInterval worth of blocks
     const CBlockIndex* pindexFirst = pindexLast;
     for (int i = 0; pindexFirst && i < blockstogoback; i++)
         pindexFirst = pindexFirst->pprev;
@@ -56,10 +99,10 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     // Limit adjustment step
     int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     LogPrintf("  nActualTimespan = %d  before bounds\n", nActualTimespan);
-    if (nActualTimespan < Params().TargetTimespan()/4)
-        nActualTimespan = Params().TargetTimespan()/4;
-    if (nActualTimespan > Params().TargetTimespan()*4)
-        nActualTimespan = Params().TargetTimespan()*4;
+    if (nActualTimespan < nMinActualTimespan)
+        nActualTimespan = nMinActualTimespan;
+    if (nActualTimespan > nMaxActualTimespan)
+        nActualTimespan = nMaxActualTimespan;
 
     // Retarget
     uint256 bnNew;
@@ -71,7 +114,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     if (fShift)
         bnNew >>= 1;
     bnNew *= nActualTimespan;
-    bnNew /= Params().TargetTimespan();
+    bnNew /= nAveragingTargetTimespan;
     if (fShift)
         bnNew <<= 1;
 

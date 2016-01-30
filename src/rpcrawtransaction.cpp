@@ -144,7 +144,7 @@ Value getrawtransaction(const Array& params, bool fHelp)
             "  ],\n"
             "  \"vout\" : [              (array of json objects)\n"
             "     {\n"
-            "       \"value\" : x.xxx,            (numeric) The value in ltc\n"
+            "       \"value\" : x.xxx,            (numeric) The value in flo\n"
             "       \"n\" : n,                    (numeric) index\n"
             "       \"scriptPubKey\" : {          (json object)\n"
             "         \"asm\" : \"asm\",          (string) the asm\n"
@@ -220,7 +220,7 @@ Value listunspent(const Array& params, bool fHelp)
             "    \"address\" : \"address\",  (string) the florincoin address\n"
             "    \"account\" : \"account\",  (string) The associated account, or \"\" for the default account\n"
             "    \"scriptPubKey\" : \"key\", (string) the script key\n"
-            "    \"amount\" : x.xxx,         (numeric) the transaction amount in ltc\n"
+            "    \"amount\" : x.xxx,         (numeric) the transaction amount in flo\n"
             "    \"confirmations\" : n       (numeric) The number of confirmations\n"
             "  }\n"
             "  ,...\n"
@@ -305,10 +305,12 @@ Value listunspent(const Array& params, bool fHelp)
 
 Value createrawtransaction(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 2)
+    if (fHelp || (params.size() < 2 || params.size() > 3))
         throw runtime_error(
-            "createrawtransaction [{\"txid\":\"id\",\"vout\":n},...] {\"address\":amount,...}\n"
-            "\nCreate a transaction spending the given inputs and sending to the given addresses.\n"
+            "createrawtransaction [{\"txid\":txid,\"vout\":n},...] {address:amount,...} [tx-comment]\n"
+            "Create a transaction spending given inputs\n"
+            "(array of objects containing transaction id and output number),\n"
+            "sending to given address(es).\n"
             "Returns hex-encoded raw transaction.\n"
             "Note that the transaction's inputs are not signed, and\n"
             "it is not stored in the wallet or transmitted to the network.\n"
@@ -324,7 +326,7 @@ Value createrawtransaction(const Array& params, bool fHelp)
             "     ]\n"
             "2. \"addresses\"           (string, required) a json object with addresses as keys and amounts as values\n"
             "    {\n"
-            "      \"address\": x.xxx   (numeric, required) The key is the florincoin address, the value is the ltc amount\n"
+            "      \"address\": x.xxx   (numeric, required) The key is the florincoin address, the value is the flo amount\n"
             "      ,...\n"
             "    }\n"
 
@@ -343,7 +345,18 @@ Value createrawtransaction(const Array& params, bool fHelp)
 
     CMutableTransaction rawTx;
 
-    BOOST_FOREACH(const Value& input, inputs) {
+    if (params.size() == 3)
+    {
+        std::string txcomment = params[2].get_str();
+        if (txcomment.length() > CTransaction::MAX_TX_COMMENT_LEN_V2)
+        {
+            txcomment.resize(CTransaction::MAX_TX_COMMENT_LEN_V2);
+        }
+        rawTx.strTxComment = txcomment;
+    }
+
+    BOOST_FOREACH(const Value& input, inputs)
+    {
         const Object& o = input.get_obj();
 
         uint256 txid = ParseHashO(o, "txid");
@@ -408,7 +421,7 @@ Value decoderawtransaction(const Array& params, bool fHelp)
             "  ],\n"
             "  \"vout\" : [             (array of json objects)\n"
             "     {\n"
-            "       \"value\" : x.xxx,            (numeric) The value in ltc\n"
+            "       \"value\" : x.xxx,            (numeric) The value in flo\n"
             "       \"n\" : n,                    (numeric) index\n"
             "       \"scriptPubKey\" : {          (json object)\n"
             "         \"asm\" : \"asm\",          (string) the asm\n"

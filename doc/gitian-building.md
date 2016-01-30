@@ -394,5 +394,5 @@ Uploading signatures
 ---------------------
 
 After building and signing you can push your signatures (both the `.assert` and `.assert.sig` files) to the
-[florincoin/gitian.sigs](https://github.com/florincoin/gitian.sigs.ltc/) repository, or if that's not possible create a pull
+[florincoin/gitian.sigs](https://github.com/florincoin/gitian.sigs.flo/) repository, or if that's not possible create a pull
 request. 

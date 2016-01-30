@@ -24,7 +24,7 @@ Release Process
 
 ###perform Gitian builds
 
- From a directory containing the florincoin source, gitian-builder and gitian.sigs.ltc
+ From a directory containing the florincoin source, gitian-builder and gitian.sigs.flo
   
     export SIGNER=(your Gitian key, ie wtogami, coblee, etc)
 	export VERSION=(new version, e.g. 0.8.0)
@@ -56,13 +56,13 @@ Release Process
 ###Build Florincoin Core for Linux, Windows, and OS X:
 
 	./bin/gbuild --commit florincoin=v${VERSION} ../florincoin/contrib/gitian-descriptors/gitian-linux.yml
-	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.ltc/ ../florincoin/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.flo/ ../florincoin/contrib/gitian-descriptors/gitian-linux.yml
 	mv build/out/florincoin-*.tar.gz build/out/src/florincoin-*.tar.gz ../
 	./bin/gbuild --commit florincoin=v${VERSION} ../florincoin/contrib/gitian-descriptors/gitian-win.yml
-	./bin/gsign --signer $SIGNER --release ${VERSION}-win --destination ../gitian.sigs.ltc/ ../florincoin/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-win --destination ../gitian.sigs.flo/ ../florincoin/contrib/gitian-descriptors/gitian-win.yml
 	mv build/out/florincoin-*.zip build/out/florincoin-*.exe ../
 	./bin/gbuild --commit florincoin=v${VERSION} ../florincoin/contrib/gitian-descriptors/gitian-osx.yml
-	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.ltc/ ../florincoin/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.flo/ ../florincoin/contrib/gitian-descriptors/gitian-osx.yml
 	mv build/out/florincoin-*-unsigned.tar.gz inputs/florincoin-osx-unsigned.tar.gz
 	mv build/out/florincoin-*.tar.gz build/out/florincoin-*.dmg ../
 	popd

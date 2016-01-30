@@ -858,7 +858,7 @@ void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmoun
                   .arg(date)
                   .arg(BitcoinUnits::formatWithUnit(unit, amount, true))
                   .arg(type)
-                  .arg(address), CClientUIInterface::MSG_INFORMATION);
+                  .arg(address + (txcomment.length() > 0 ? ("\n" + txcomment : ""))), CClientUIInterface::MSG_INFORMATION);
 }
 #endif // ENABLE_WALLET
 

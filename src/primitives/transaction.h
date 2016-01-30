@@ -11,6 +11,8 @@
 #include "serialize.h"
 #include "uint256.h"
 
+#include <iostream>
+
 /** An outpoint - a combination of a transaction hash and an index n into its vout */
 class COutPoint
 {
@@ -168,7 +170,12 @@ private:
     void UpdateHash() const;
 
 public:
-    static const int32_t CURRENT_VERSION=1;
+    static const unsigned int MAX_TX_COMMENT_LEN_V1 = 140; // Florincoin: 128 bytes + little extra
+    static const unsigned int MAX_TX_COMMENT_LEN_V2 = 528; // V2          512 bytes + little extra
+    static const unsigned int TX_COMMENT_V2_HEIGHT = 340000;
+
+    static const int32_t LEGACY_VERSION_1=1;
+    static const int32_t CURRENT_VERSION=2;
 
     // The local variables are made const to prevent unintended modification
     // without updating the cached hash value. However, CTransaction is not
@@ -179,6 +186,7 @@ public:
     const std::vector<CTxIn> vin;
     const std::vector<CTxOut> vout;
     const uint32_t nLockTime;
+    std::string strTxComment;
 
     /** Construct a CTransaction that qualifies as IsNull() */
     CTransaction();
@@ -197,6 +205,9 @@ public:
         READWRITE(*const_cast<std::vector<CTxIn>*>(&vin));
         READWRITE(*const_cast<std::vector<CTxOut>*>(&vout));
         READWRITE(*const_cast<uint32_t*>(&nLockTime));
+        if(this->nVersion > CTransaction::LEGACY_VERSION_1){
+            READWRITE(strTxComment);
+        }
         if (ser_action.ForRead())
             UpdateHash();
     }
@@ -245,6 +256,7 @@ struct CMutableTransaction
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
     uint32_t nLockTime;
+    std::string strTxComment;
 
     CMutableTransaction();
     CMutableTransaction(const CTransaction& tx);
@@ -258,6 +270,9 @@ struct CMutableTransaction
         READWRITE(vin);
         READWRITE(vout);
         READWRITE(nLockTime);
+        if(this->nVersion > CTransaction::LEGACY_VERSION_1){
+            READWRITE(strTxComment);
+        }
     }
 
     /** Compute the hash of this CMutableTransaction. This is computed on the
