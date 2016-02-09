@@ -209,11 +209,11 @@ void CExtKey::Decode(const unsigned char code[74]) {
 }
 
 bool ECC_InitSanityCheck() {
-#if !defined(USE_SECP256K1)
+//#if !defined(USE_SECP256K1)
     if (!CECKey::SanityCheck()) {
         return false;
     }
-#endif
+//#endif
     CKey key;
     key.MakeNewKey(true);
     CPubKey pubkey = key.GetPubKey();
