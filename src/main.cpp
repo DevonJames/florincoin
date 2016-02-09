@@ -1421,8 +1421,8 @@ void UpdateCoins(const CTransaction& tx, CValidationState &state, CCoinsViewCach
 
 bool CScriptCheck::operator()() {
     const CScript &scriptSig = ptxTo->vin[nIn].scriptSig;
-    if(chainActive.Height() < 1600000)
-        return true; // Trust all transactions until block 1.6 mil where the hard fork will take place with a new checkpoint.
+    if(chainActive.Height() < Params().EnforceV2AfterHeight())
+        return true; // Trust all transactions until the hard fork with a new checkpoint.
     if (!VerifyScript(scriptSig, scriptPubKey, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, cacheStore), &error)) {
         return ::error("CScriptCheck(): %s:%d VerifySignature failed: %s", ptxTo->GetHash().ToString(), nIn, ScriptErrorString(error));
     }
