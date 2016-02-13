@@ -847,18 +847,19 @@ void BitcoinGUI::closeEvent(QCloseEvent *event)
 }
 
 #ifdef ENABLE_WALLET
-void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address)
+void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address, const QString& txcomment)
 {
     // On new transaction, make an info balloon
     message((amount)<0 ? tr("Sent transaction") : tr("Incoming transaction"),
              tr("Date: %1\n"
                 "Amount: %2\n"
                 "Type: %3\n"
-                "Address: %4\n")
+                "Address: %4\n"
+                "Comment: %5\n")
                   .arg(date)
                   .arg(BitcoinUnits::formatWithUnit(unit, amount, true))
                   .arg(type)
-                  .arg(address + (txcomment.length() > 0 ? ("\n" + txcomment : ""))), CClientUIInterface::MSG_INFORMATION);
+                  .arg(address + (txcomment.length() > 0 ? ("\n" + txcomment) : "")), CClientUIInterface::MSG_INFORMATION);
 }
 #endif // ENABLE_WALLET
 

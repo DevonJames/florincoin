@@ -191,6 +191,8 @@ void SendCoinsDialog::on_sendButton_clicked()
     if(!model || !model->getOptionsModel())
         return;
 
+    QString txcomment = ui->editTxComment->text();
+
     QList<SendCoinsRecipient> recipients;
     bool valid = true;
 
@@ -267,9 +269,9 @@ void SendCoinsDialog::on_sendButton_clicked()
     WalletModelTransaction currentTransaction(recipients);
     WalletModel::SendCoinsReturn prepareStatus;
     if (model->getOptionsModel()->getCoinControlFeatures()) // coin control enabled
-        prepareStatus = model->prepareTransaction(currentTransaction, CoinControlDialog::coinControl);
+        prepareStatus = model->prepareTransaction(txcomment, currentTransaction, CoinControlDialog::coinControl);
     else
-        prepareStatus = model->prepareTransaction(currentTransaction);
+        prepareStatus = model->prepareTransaction(txcomment, currentTransaction);
 
     // process prepareStatus and on error generate message shown to user
     processSendCoinsReturn(prepareStatus,
@@ -321,7 +323,7 @@ void SendCoinsDialog::on_sendButton_clicked()
     }
 
     // now send the prepared transaction
-    WalletModel::SendCoinsReturn sendStatus = model->sendCoins(currentTransaction);
+    WalletModel::SendCoinsReturn sendStatus = model->sendCoins(txcomment, currentTransaction);
     // process sendStatus and on error generate message shown to user
     processSendCoinsReturn(sendStatus);
 
@@ -336,6 +338,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 
 void SendCoinsDialog::clear()
 {
+    ui->editTxComment->clear();
     // Remove entries until only one left
     while(ui->entries->count())
     {
@@ -398,6 +401,7 @@ void SendCoinsDialog::removeEntry(SendCoinsEntry* entry)
 
 QWidget *SendCoinsDialog::setupTabChain(QWidget *prev)
 {
+    QWidget::setTabOrder(prev,ui->editTxComment);
     for(int i = 0; i < ui->entries->count(); ++i)
     {
         SendCoinsEntry *entry = qobject_cast<SendCoinsEntry*>(ui->entries->itemAt(i)->widget());
